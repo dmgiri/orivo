@@ -22,6 +22,7 @@
     "check": "node scripts/check.mjs",
     "pack:source": "node scripts/pack.mjs",
     "build:win": "node scripts/build-win.mjs",
+    "build:linux": "node scripts/build-linux.mjs",
     "test:preview": "node test/preview-maximize.mjs",
     "test:resize": "node test/preview-resize.mjs",
     "test:height": "node test/preview-height.mjs",
