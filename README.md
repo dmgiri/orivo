@@ -125,4 +125,4 @@ AI Explain is not available in version 0.1.0, and related controls are not shown
 
 ## License
 
-This project is unlicensed. See the package metadata for details.
+Released under the [MIT License](LICENSE).
