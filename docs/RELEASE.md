@@ -7,7 +7,7 @@ Orivo 0.1.0 beta is a local development tracing tool. It follows captured eviden
 
 ## Package notes
 
-- Windows x64 packages include a portable ZIP archive containing `Orivo.exe`.
+- Windows x64 packages include a portable ZIP archive and an unsigned per-user `Setup.exe` installer.
 - Linux x64 packages are portable `.tar.gz` archives built for Linux environments.
 - Extract the package completely before launching it. No Node.js or npm installation is required.
 - This beta has no automatic updates or code signing.

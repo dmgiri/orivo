@@ -8,6 +8,7 @@ on:
       - package-lock.json
       - scripts/build-win.mjs
       - scripts/build-linux.mjs
+      - scripts/installer/**
       - scripts/windows-assets.mjs
       - scripts/windows-resources.ps1
       - docs/RELEASE.md

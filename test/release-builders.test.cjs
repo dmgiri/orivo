@@ -31,7 +31,9 @@ test('Windows builder can resolve the Electron package from an ES module', () =>
   assert.match(windowsBuilder, /const require=createRequire\(import\.meta\.url\);/);
 });
 
-test('Windows builder completes as a portable release when installer sources are absent', () => {
+test('Windows builder includes the per-user setup executable', () => {
   const windowsBuilder = fs.readFileSync(path.join(root, 'scripts', 'build-win.mjs'), 'utf8');
-  assert.match(windowsBuilder, /Installer source is not included; portable package built\./);
+  assert.ok(fs.existsSync(path.join(root, 'scripts', 'installer', 'OrivoSetup.cs')));
+  assert.ok(fs.existsSync(path.join(root, 'scripts', 'installer', 'Uninstall-Orivo.ps1')));
+  assert.match(windowsBuilder, /build-installer\.mjs/);
 });

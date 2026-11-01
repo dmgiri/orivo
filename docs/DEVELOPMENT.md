@@ -21,7 +21,7 @@ node_modules, .tmp, evidence, dist and optional model/runtime assets are generat
 
 ## Packaging
 
-npm.cmd run pack:source creates a source package. npm.cmd run build:win creates a model-free Windows x64 portable ZIP containing Orivo.exe. npm run build:linux creates a model-free Linux x64 .tar.gz archive and must run on Linux. Both builds require the installed Electron dependency but do not require a separate Node.js or npm installation for end users.
+npm.cmd run pack:source creates a source package. npm.cmd run build:win creates a model-free Windows x64 portable ZIP plus an unsigned per-user Setup.exe installer. npm run build:linux creates a model-free Linux x64 .tar.gz archive and must run on Linux. Both builds require the installed Electron dependency but do not require a separate Node.js or npm installation for end users.
 
 ## Theme motion
 
