@@ -1,0 +1,9 @@
+ORIVO v0.1.0
+
+Install Node.js 24.13 or newer, then open a terminal in this folder:
+  npm.cmd ci
+  npm.cmd start
+
+After installing dependencies, Start Orivo.cmd also opens Orivo.
+Read README.md for the product guide and docs/DEVELOPMENT.md for development.
+Offline AI assets are optional; normal tracing does not require them.

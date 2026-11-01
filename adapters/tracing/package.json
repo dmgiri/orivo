@@ -1,0 +1,19 @@
+{
+  "name": "@orivo/tracing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Opt-in local development tracing adapters for Orivo",
+  "exports": {
+    "./vite": "./vite.mjs",
+    "./next": "./next.mjs",
+    "./runtime": "./runtime.mjs",
+    "./browser": "./browser.mjs",
+    "./node-sqlite": "./node-sqlite.cjs",
+    "./node-http": "./node-http.cjs"
+  },
+  "bin": {"orivo": "./cli.mjs"},
+  "files": ["*.mjs", "*.cjs", "*.py", "*.toml", "*.txt", "README.md"],
+  "peerDependencies": {"vite": ">=5 <9", "next": ">=16 <17"},
+  "peerDependenciesMeta": {"vite": {"optional": true}, "next": {"optional": true}}
+}

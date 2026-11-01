@@ -1,0 +1,20 @@
+/* Original compact workbench, with discoverable setup and component controls. */
+body .app-sidebar .preview-caption .inspect-button{height:28px;min-height:28px}
+.appearance-switch{display:flex;gap:2px;align-items:center;padding:2px;border:1px solid var(--line);border-radius:5px;background:var(--page);flex-shrink:0}
+.appearance-switch button{height:24px;padding:0 7px;border-radius:3px;font-size:10px;color:var(--muted)}
+.appearance-switch button[aria-pressed=true]{background:var(--selection);color:var(--ink)}
+body .heading-actions #trace-tools-button{width:auto;min-width:28px;gap:5px;padding:4px 7px;font-size:10px}
+body .react-component-path li{display:block}
+body .react-component-path .component-source{display:flex;width:100%;min-height:32px;align-items:center;justify-content:space-between;gap:10px;padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--page);text-decoration:none;color:var(--ink)}
+body .component-source .component-name{font-size:11px;max-width:none;min-width:0;flex:1;text-align:left}
+body .component-location{font:9px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body .component-source:hover,body .component-source[aria-current=true]{background:var(--selection);border-color:var(--accent)}
+body .component-unavailable .component-name{display:block;max-width:none}
+body .component-source-unavailable{font-size:10px;white-space:normal}
+body .detail-panel.components-only .detail-body{display:block}
+body .detail-panel.components-only .code-column{display:none}
+body .detail-panel.components-only .evidence-column{display:block;height:100%;overflow:auto}
+body .detail-panel.components-only .evidence-column>:not(#react-component-path){display:none}
+body .detail-panel.components-only .react-component-path{margin:0;padding:0;border:0}
+body .detail-panel.components-only .react-component-path[hidden]{display:block!important}
+body .detail-panel.components-only #react-component-list:empty::before{content:'Select an element to view its captured React components.';color:var(--muted);font-size:11px}

@@ -1,0 +1,52 @@
+// Isolated host IPC acceptance: no user profile, editor process, or live
+// application is touched. The controlled manager owns only this fixture.
+import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { createRequire } from 'node:module';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { _electron as electron } from 'playwright-core';
+const require = createRequire(import.meta.url), root = path.resolve(fileURLToPath(new URL('../', import.meta.url)));
+const id = 'trace-product-native-' + Date.now(), artifacts = path.join(root, '.tmp', id), fixture = path.join(artifacts, 'project');
+await mkdir(fixture, { recursive: true });
+await writeFile(path.join(fixture, 'app.js'), 'export const title="Restart fixture";\n');
+const server = createServer((_request, response) => { response.writeHead(200, { 'Content-Type': 'text/html' }); response.end('<!doctype html><h1 id="title">Restart fixture</h1>'); });
+await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+const url = `http://127.0.0.1:${server.address().port}/`, bootstrap = path.join(artifacts, 'bootstrap.cjs');
+await writeFile(bootstrap, `const Module=require('node:module');const electron=require('electron');const main=${JSON.stringify(path.join(root, 'main.cjs'))};const original=Module._load;global.__traceProduct={events:[],opened:[]};electron.shell.openExternal=async url=>global.__traceProduct.opened.push(url);const manager={createAutoAttach({onState}){let active=false,root=null;const state=()=>({status:active?'running':'stopped',active,url:${JSON.stringify(url)},frontend:'vite:frontend',backend:null,notice:'Fixture'});return{async state(){return state();},async stop(folder){global.__traceProduct.events.push('stop');active=false;onState(folder,state());return state();},async start(folder,options){global.__traceProduct.events.push({start:options});root=folder;active=true;onState(folder,state());return state();},async close(){active=false;},async detect(){return{};}};}};Module._load=function(request,parent){if(parent?.filename===main&&request==='./adapters/tracing/auto-attach.cjs')return manager;return original.apply(this,arguments);};require(main);`);
+const env = { ...process.env, TRACE_ATLAS_TEST_PROFILE: id }; delete env.ELECTRON_RUN_AS_NODE; delete env.ORIVO_START_MODE;
+let app; const checks = [];
+try {
+  app = await electron.launch({ executablePath: require('electron'), args: [bootstrap], env, timeout: 30000 });
+  const page = await app.firstWindow(); await page.waitForFunction(() => window.traceAtlas?.getState().then(state => state.demo && !state.loading));
+  await page.waitForFunction(() => window.traceAtlas.getTraceHealth().then(health => health.observed.coverage === 'complete'));
+  const capture = async selector => { for (let attempt = 0; attempt < 10; attempt++) { const value = await page.evaluate(selector => window.traceAtlas.capture(selector), selector); if (value) return value; await new Promise(resolve => setTimeout(resolve, 60)); } throw Error('Preview context did not settle for capture'); };
+  const graph = await capture('[data-trace-id="price-orbit"]'); assert.equal(graph.coverage, 'complete');
+  const snapshot = await page.evaluate(id => window.traceAtlas.pinTrace(id, 'Before'), graph.id); const opened = await page.evaluate(id => window.traceAtlas.openSnapshot(id), snapshot.id);
+  assert.equal(opened.snapshot.readOnly, true); assert.equal(opened.id, graph.id); assert.equal((await page.evaluate(() => window.traceAtlas.getSnapshots())).snapshots.length, 1);
+  checks.push('A real captured trace can be pinned, listed and reopened read-only through the isolated Electron bridge');
+  const node = graph.nodes.find(node => node.file && node.meta?.sourceHash);
+  await page.evaluate(options => window.traceAtlas.openInEditor(options), { graphId: graph.id, nodeId: node.id });
+  const external = await app.evaluate(() => global.__traceProduct.opened); assert.equal(external.length, 1); assert.match(external[0], /^vscode:\/\/file\//);
+  await assert.rejects(page.evaluate(options => window.traceAtlas.openInEditor(options), { graphId: graph.id, nodeId: node.id, path: '../arbitrary.py' }), /current captured source/);
+  checks.push('VS Code navigation uses a verified current captured file and rejects renderer-supplied file paths');
+  const exported = path.join(artifacts, 'capture.json'); await app.evaluate(({ dialog }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); }, exported);
+  await page.evaluate(id => window.traceAtlas.exportTrace(id), graph.id); const serialized = JSON.parse(await readFile(exported, 'utf8')); serialized.graph.id = 'trace-imported'; await writeFile(exported, JSON.stringify(serialized));
+  await app.evaluate(({ dialog }, file) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] }); }, exported);
+  const imported = await page.evaluate(() => window.traceAtlas.importTrace()); assert.equal(imported.snapshot.imported, true); assert.equal(imported.graph.snapshot.readOnly, true);
+  await assert.rejects(page.evaluate(options => window.traceAtlas.openInEditor(options), { graphId: imported.graph.id, nodeId: node.id }), /current captured repository source/);
+  assert.equal((await capture('[data-trace-id="price-orbit"]')).coverage, 'complete');
+  const diff = await page.evaluate(ids => window.traceAtlas.compareSnapshots(...ids), [snapshot.id, imported.snapshot.id]); assert.equal(diff.unchanged, true);
+  checks.push('Export/import remains read-only, blocks imported editor navigation, preserves live capture and compares without volatile IDs');
+  await app.evaluate(({ dialog }, folder) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [folder] }); }, fixture);
+  await page.evaluate(() => window.traceAtlas.connectRepository()); await page.evaluate(url => window.traceAtlas.openApp(url), url);
+  await page.waitForFunction(() => window.traceAtlas.getState().then(state => !state.loading));
+  await capture('#title');
+  const restarted = await page.evaluate(() => window.traceAtlas.restartAndRecapture()); assert.equal(restarted.recaptured, true); assert.equal(restarted.graph.selector, '#title');
+  const events = await app.evaluate(() => global.__traceProduct.events); const lastStart = events.findLastIndex(event => typeof event === 'object' && event.start); assert.equal(events[lastStart - 1], 'stop'); assert.deepEqual(events[lastStart].start, { frontend: 'vite:frontend', backend: null, url });
+  const health = await page.evaluate(() => window.traceAtlas.getTraceHealth()); assert.equal(health.managed.active, true); assert.equal(health.observed.coverage, 'unavailable'); assert.equal(health.observed.stages.find(stage => stage.id === 'sql').status, 'not-observed');
+  checks.push('Managed restart stops the previous owned fixture, reuses the selected launch plan, rescans, waits for preview and recaptures without claiming unsupported SQL coverage');
+  await page.evaluate(id => window.traceAtlas.removeSnapshot(id), imported.snapshot.id); assert.equal((await page.evaluate(() => window.traceAtlas.getSnapshots())).snapshots.length, 1);
+  await writeFile(path.join(artifacts, 'result.json'), JSON.stringify({ passed: true, checks, runAt: new Date().toISOString() }, null, 2)); console.log(JSON.stringify({ passed: true, checks }, null, 2));
+} finally { if (app) await app.close(); await new Promise(resolve => { server.closeAllConnections(); server.close(resolve); }); }

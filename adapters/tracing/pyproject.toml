@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anvaya-tracing"
+version = "0.1.0"
+description = "Opt-in local development request and database tracing for Anvaya"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.110", "sqlalchemy>=2,<3"]
+
+[tool.setuptools]
+py-modules = ["studio_tracing"]

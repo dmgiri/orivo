@@ -1,0 +1,54 @@
+:root{--motion-fast:160ms;--motion-view:220ms;--motion-theme:280ms;--motion-theme-wave:780ms;--motion-theme-ease:linear(0, .06 20%, .42 60%, 1);--motion-ease:cubic-bezier(.2,.7,.2,1)}
+body button{transition:background-color var(--motion-fast) var(--motion-ease),color var(--motion-fast) var(--motion-ease),border-color var(--motion-fast) var(--motion-ease),transform var(--motion-fast) var(--motion-ease)}
+body button:hover:not(:disabled),body button:focus-visible{background-color:var(--accent-soft)}
+body button.primary-button:hover:not(:disabled),body button.inspect-button:hover:not(:disabled),body button.primary-button:focus-visible,body button.inspect-button:focus-visible{background-color:var(--accent-deep)}
+body button:active:not(:disabled){transform:scale(.98)}
+body .view-panel:not([hidden]){animation:orivo-view-enter var(--motion-view) var(--motion-ease)}
+@keyframes orivo-view-enter{from{opacity:.35}to{opacity:1}}
+::view-transition-old(root){animation:orivo-theme-out var(--motion-theme) var(--motion-ease) both}
+::view-transition-new(root){animation:orivo-theme-in var(--motion-theme) var(--motion-ease) both}
+@keyframes orivo-theme-out{to{opacity:0}}
+@keyframes orivo-theme-in{from{opacity:0}}
+/* Reveal the new snapshot from the top-right corner across the diagonal. */
+:root[data-theme-transition=wave]::view-transition-old(root){animation:none;mix-blend-mode:normal;z-index:1}
+:root[data-theme-transition=wave]::view-transition-new(root){animation:theme-wave-reveal var(--motion-theme-wave) var(--motion-theme-ease) both;mix-blend-mode:normal;z-index:2}
+:root[data-theme-transition=wave]::view-transition-group(root){animation-duration:var(--motion-theme-wave)}
+:root[data-theme-transition=wave] body *,:root[data-theme-transition=wave] body *::before,:root[data-theme-transition=wave] body *::after{transition:none!important}
+@keyframes theme-wave-reveal{from{clip-path:circle(0 at 100% 0)}to{clip-path:circle(var(--theme-wave-radius,150vmax) at 100% 0)}}
+/* A transparent named snapshot adds a lit water crest above the theme reveal. */
+@property --water-front{syntax:'<length>';inherits:false;initial-value:0px}
+.theme-water-surface{position:fixed;inset:0;pointer-events:none;z-index:2147483647}
+:root[data-theme-transition=wave] .theme-water-surface{view-transition-name:theme-water}
+:root[data-theme-transition=wave]::view-transition-group(theme-water){animation:none;z-index:3;pointer-events:none}
+:root[data-theme-transition=wave]::view-transition-old(theme-water){display:none}
+:root[data-theme-transition=wave]::view-transition-new(theme-water){
+  mix-blend-mode:normal;
+  filter:blur(1.25px);
+  background-image:
+    radial-gradient(circle at 100% 0,
+      transparent calc(var(--water-front) - 116px),
+      rgb(213 245 255 / .13) calc(var(--water-front) - 105px),
+      rgb(255 255 255 / .28) calc(var(--water-front) - 99px),
+      rgb(7 23 39 / .13) calc(var(--water-front) - 94px),
+      transparent calc(var(--water-front) - 80px),
+      rgb(255 255 255 / .10) calc(var(--water-front) - 59px),
+      rgb(255 255 255 / .38) calc(var(--water-front) - 51px),
+      rgb(7 23 39 / .17) calc(var(--water-front) - 44px),
+      transparent calc(var(--water-front) - 30px),
+      rgb(8 20 36 / .18) calc(var(--water-front) - 18px),
+      rgb(207 239 255 / .32) calc(var(--water-front) - 9px),
+      rgb(255 255 255 / .56) calc(var(--water-front) - 3px),
+      rgb(255 255 255 / .32) var(--water-front),
+      rgb(104 169 195 / .15) calc(var(--water-front) + 5px),
+      rgb(5 18 33 / .20) calc(var(--water-front) + 14px),
+      transparent calc(var(--water-front) + 36px));
+  animation:theme-water-front var(--motion-theme-wave) var(--motion-theme-ease) both,theme-water-crest var(--motion-theme-wave) linear both;
+}
+@keyframes theme-water-front{from{--water-front:0px}to{--water-front:var(--theme-wave-radius,150vmax)}}
+@keyframes theme-water-crest{0%{opacity:0}16%{opacity:.8}72%{opacity:.65}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{transition-duration:0s!important;animation-duration:0s!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+ body button:active:not(:disabled){transform:none}
+ ::view-transition-old(root),::view-transition-new(root){animation:none!important}
+ ::view-transition-group(theme-water),::view-transition-new(theme-water){animation:none!important;opacity:0!important}
+}

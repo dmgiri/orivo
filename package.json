@@ -1,0 +1,47 @@
+{
+  "name": "@orivo/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A visual, evidence-based journey from a rendered element to its source, request, query and data origin.",
+  "productName": "Orivo",
+  "main": "main.cjs",
+  "engines": {
+    "node": ">=24.13"
+  },
+  "scripts": {
+    "start": "node scripts/launch.mjs",
+    "test": "node --test test/*.test.cjs",
+    "test:browser": "node test/browser.mjs",
+    "test:themes": "node test/themes-native.mjs",
+    "test:index-profiles": "node test/index-profiles-native.mjs",
+    "test:diagrams": "node test/diagram-studio-native.mjs",
+    "test:lifecycle": "node test/host-lifecycle.mjs",
+    "test:launcher": "node test/launcher.mjs",
+    "test:product": "node test/product.mjs",
+    "test:packaged": "node test/packaged.mjs",
+    "check": "node scripts/check.mjs",
+    "pack:source": "node scripts/pack.mjs",
+    "build:win": "node scripts/build-win.mjs",
+    "test:preview": "node test/preview-maximize.mjs",
+    "test:resize": "node test/preview-resize.mjs",
+    "test:height": "node test/preview-height.mjs",
+    "test:zoom": "node test/graph-zoom.mjs",
+    "test:trace-tools": "node test/trace-tools.mjs",
+    "test:trace-product": "node test/trace-product-native.mjs",
+    "test:models": "node test/model-tracing.mjs",
+    "test:models:queries": "node test/query-model-tracing.mjs",
+    "test:automatic": "node test/automatic-attach.mjs",
+    "test:automatic:postgres": "node test/auto-node-postgres.mjs",
+    "test:automatic:host": "node test/automatic-host-guards.mjs",
+    "test:automatic:next": "node test/automatic-next.mjs",
+    "test:automatic:vite5": "node test/automatic-vite5.mjs",
+    "prepare:ai": "node scripts/prepare-local-ai.mjs",
+    "test:ui": "node test/compact-ui.mjs",
+    "test:theme-wave": "node test/theme-wave.mjs"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "playwright-core": "1.64.0"
+  },
+  "license": "UNLICENSED"
+}

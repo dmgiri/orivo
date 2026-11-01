@@ -1,0 +1,6 @@
+﻿{
+    "repository":  "https://github.com/microsoft/vscode",
+    "commit":  "97d01924531421f671b69342f629ba0f9f0f1e2e",
+    "source":  "extensions/theme-defaults/themes",
+    "license":  "MIT"
+}

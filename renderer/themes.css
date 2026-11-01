@@ -1,0 +1,19 @@
+/* Palette tokens only: preserve the compact workbench's sizing and layout. */
+.palette-control{display:flex;align-items:center;gap:6px;flex-shrink:0;color:var(--muted);font-size:10px}
+.palette-control select{height:28px;max-width:145px;padding:0 7px;border:1px solid var(--line);border-radius:4px;color:var(--ink);background:var(--page);font:11px 'Segoe UI',system-ui}
+:root[data-palette] body{background:var(--page)}
+:root[data-palette] .primary-button,:root[data-palette] body .inspect-button{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:none}
+:root[data-palette] .primary-button:hover,:root[data-palette] body .inspect-button:hover{background:var(--accent-deep);filter:brightness(1.06)}
+:root[data-palette] body .inspect-button.inspecting{background:var(--kind-query);color:var(--on-accent)}
+:root[data-palette] .rail-button.active,:root[data-palette] .view-tabs button[aria-selected=true]{color:var(--accent)}
+:root[data-palette] .brand-mark,:root[data-palette] .local-pill,:root[data-palette] .wordmark>span:first-child,:root[data-palette] .address-bar input{color:var(--muted)}
+:root[data-palette] .local-pill i,:root[data-palette] .status-dot{background:var(--accent)}
+:root[data-palette] .graph-canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) .7px,transparent .7px)}
+:root[data-palette] .graph-node .node-card{fill:var(--panel);stroke:var(--line)}
+:root[data-palette] .graph-node.selected .node-card{stroke:var(--accent)}
+:root[data-palette] .graph-node:hover .node-card{stroke:var(--accent)}
+:root[data-palette] .coverage-badge,:root[data-palette] .trace-summary .coverage-badge.partial{background:var(--accent-soft);color:var(--accent)}
+:root[data-palette] .detail-kind,:root[data-palette] .active-line{background:var(--active-line);color:var(--accent)}
+:root[data-palette] .empty-orbit{background:var(--panel);border-color:var(--line)}
+:root[data-palette] button:focus-visible,:root[data-palette] a:focus-visible,:root[data-palette] input:focus-visible,:root[data-palette] select:focus-visible{outline-color:var(--accent)}
+@media(max-width:1200px){.palette-control>span{display:none}.palette-control select{max-width:125px}.topbar .command-center{flex:1;min-width:100px;width:auto}.topbar{gap:12px}}

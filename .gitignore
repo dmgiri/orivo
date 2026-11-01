@@ -1,0 +1,11 @@
+node_modules/
+.tmp/
+.local-data/
+dist/
+*.tgz
+evidence/
+resources/ai/runtime/
+resources/ai/models/*.gguf
+resources/ai/asset-manifest.json
+resources/ai/.prepare-*/
+/model/

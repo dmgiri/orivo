@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+import path from 'node:path';
+import {_electron as electron} from 'playwright-core';
+const require=createRequire(import.meta.url),root=path.resolve(import.meta.dirname,'..'),pack=require('../renderer/themes.js');
+const evidence=path.join(root,'evidence','theme-pack');await mkdir(evidence,{recursive:true});
+const env={...process.env,TRACE_ATLAS_TEST_PROFILE:'themes-'+Date.now()};delete env.ELECTRON_RUN_AS_NODE;delete env.ORIVO_START_MODE;
+let app;const checks=[],errors=[];
+try{
+ app=await electron.launch({executablePath:require('electron'),args:[root],env,timeout:30000});
+ const page=await app.firstWindow();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
+ await page.locator('#coverage-badge').filter({hasText:'Element to column captured'}).waitFor();
+ await app.evaluate(({BrowserWindow})=>{const w=BrowserWindow.getAllWindows()[0];if(w.isMaximized())w.unmaximize();w.setSize(1640,1000);});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const geometry=()=>page.evaluate(()=>({sidebar:document.querySelector('#app-sidebar').getBoundingClientRect().width,toolbar:document.querySelector('.trace-toolbar').getBoundingClientRect().height}));
+ const baseline=await geometry();
+ for(const palette of pack.workbenchPalettes)for(const mode of ['dark','light']){
+  await page.locator('[data-appearance='+mode+']').click();
+  await page.waitForFunction(({id,mode})=>document.documentElement.dataset.palette===id&&document.documentElement.dataset.theme===mode,{id:palette.id,mode});
+  const actual=await page.evaluate(()=>({palette:document.documentElement.dataset.palette,mode:document.documentElement.dataset.theme,page:getComputedStyle(document.documentElement).getPropertyValue('--page').trim(),overflow:document.documentElement.scrollWidth>innerWidth}));
+  assert.equal(actual.palette,palette.id);assert.equal(actual.mode,mode);assert.equal(actual.page,pack.tokens(palette.id,mode).page);assert.equal(actual.overflow,false);assert.deepEqual(await geometry(),baseline);
+  const toggle=await page.evaluate(()=>({labels:[...document.querySelectorAll('[data-appearance]')].map(n=>n.textContent),thumb:getComputedStyle(document.querySelector('.appearance-switch'),'::before').transform,cardShadow:getComputedStyle(document.querySelector('.graph-node:not(.selected) .node-card')).filter}));
+  assert.deepEqual(toggle.labels,['Light','Dark']);assert.ok(toggle.thumb.includes(mode==='dark'?'55':'0'));if(mode==='light')assert.match(toggle.cardShadow,/drop-shadow/);
+  await page.waitForTimeout(100);
+  const png=await app.evaluate(async({BrowserWindow,desktopCapturer})=>{const w=BrowserWindow.getAllWindows()[0],b=w.getBounds(),sources=await desktopCapturer.getSources({types:['window'],thumbnailSize:{width:b.width,height:b.height}}),own=sources.find(s=>s.id===w.getMediaSourceId());return(own&&!own.thumbnail.isEmpty()?own.thumbnail:await w.capturePage()).toPNG().toString('base64');});
+  await writeFile(path.join(evidence,palette.id+'-'+mode+'.png'),Buffer.from(png,'base64'));
+ }
+ checks.push('VS Code 2026 dark/light apply official tokens without changing workbench geometry');
+ await page.reload();await page.locator('#coverage-badge').filter({hasText:'Element to column captured'}).waitFor();
+ assert.equal(await page.locator('#palette-select').inputValue(),'vscode-2026');assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+ checks.push('Palette and light/dark preference survive renderer reload');
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{document.querySelector('[data-appearance=dark]').click();document.querySelector('[data-appearance=light]').click();document.querySelector('[data-appearance=dark]').click();document.querySelector('[data-appearance=light]').click();});
+ await page.waitForFunction(()=>document.documentElement.dataset.palette==='vscode-2026'&&document.documentElement.dataset.theme==='light');
+ await page.waitForTimeout(350);assert.equal(await page.locator('#palette-select').inputValue(),'vscode-2026');
+ assert.equal(await page.locator('.appearance-switch').evaluate(element=>getComputedStyle(element,'::before').transform),'matrix(1, 0, 0, 1, 0, 0)');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ assert.equal(await page.locator('[data-appearance=dark]').evaluate(element=>getComputedStyle(element).transitionDuration),'0s');
+ assert.equal(await page.locator('.appearance-switch').evaluate(element=>getComputedStyle(element,'::before').transitionDuration),'0s');
+ checks.push('Rapid appearance changes settle on the latest choice; reduced motion suppresses transitions');
+ await page.keyboard.press('Control+Shift+P');await page.locator('#command-dialog[open]').waitFor();
+ assert.notEqual(await page.locator('#command-dialog').evaluate(element=>getComputedStyle(element).boxShadow),'none');await page.screenshot({path:path.join(evidence,'azure-light-menu.png')});await page.keyboard.press('Escape');
+ checks.push('Light/Dark labels, sliding selector, azure card shadows and elevated command menu verified');
+ await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1100,700));await page.waitForTimeout(250);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ for(const selector of ['[data-appearance=dark]','[data-appearance=light]'])assert.ok(await page.locator(selector).isVisible());
+ for(const selector of ['#nav-history','#nav-guide','#nav-about','#theme-toggle'])assert.ok(await page.locator(selector).evaluate(node=>{const bounds=node.getBoundingClientRect();return bounds.top>=0&&bounds.bottom<=innerHeight;}),'Navigation must fit the compact desktop: '+selector);
+ assert.deepEqual(errors,[]);checks.push('Compact desktop minimum retains palette and appearance controls');
+ const typography=await page.evaluate(()=>({ui:getComputedStyle(document.body).fontFamily,code:getComputedStyle(document.querySelector('.code-line')).fontFamily,codeSize:getComputedStyle(document.querySelector('.code-line')).fontSize,rail:document.querySelector('.rail').getBoundingClientRect().width,title:document.querySelector('.topbar').getBoundingClientRect().height}));
+ assert.match(typography.ui,/Segoe UI/);assert.match(typography.code,/^Consolas/);assert.equal(typography.codeSize,'13px');assert.equal(typography.rail,48);assert.equal(typography.title,36);
+ checks.push('Segoe UI interface, Consolas 13px source, 48px activity bar and 36px command/title bar verified');
+ await writeFile(path.join(evidence,'result.json'),JSON.stringify({passed:true,variants:2,checks,errors,typography},null,2));console.log(JSON.stringify({passed:true,checks,evidence}));
+}finally{if(app)await app.close();}

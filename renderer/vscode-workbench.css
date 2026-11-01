@@ -1,0 +1,179 @@
+/* Orivo-owned workbench styling using Microsoft's official 2026 theme tokens.
+   Original Archify files and its viewer remain untouched. */
+:root{--ui-font:'Segoe WPC','Segoe UI',sans-serif;--mono:Consolas,'Courier New',monospace;--shadow:0 2px 8px #00000018}
+body,button,input,select,textarea{font-family:var(--ui-font);font-size:13px;letter-spacing:normal}
+body{font-weight:400;background:var(--page);color:var(--ink)}
+button,input,select,textarea{font-weight:400}button:active:not(:disabled){transform:none}
+body .rail{width:48px;padding:0 0 4px;background:var(--rail);border-right:1px solid var(--line);gap:0}
+body .rail .brand-mark{width:48px;height:36px;min-height:36px;padding:9px 13px;border:0;border-radius:0;box-shadow:none;background:none;color:var(--muted)}
+body .brand-mark svg{width:22px;height:22px}
+body .rail-group{width:48px;gap:0;margin-top:0}
+body .rail-bottom{width:48px;gap:0}
+body .rail-button,body .rail-bottom #theme-toggle{width:48px;height:48px;min-height:48px;border-radius:0;padding:12px;gap:0;position:relative;color:var(--muted)}
+body .rail-button small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body .rail-button span[data-icon]>svg,body .rail-button#nav-diagrams>svg{width:24px;height:24px}
+body .rail-button.active{color:var(--ink);background:var(--hover-bg)}
+body .rail-button.active::before{position:absolute;left:0;top:10px;bottom:10px;width:2px;background:var(--ink);content:'';border-radius:1px}
+body .rail-button:hover{background:var(--hover-bg);color:var(--ink)}
+body .topbar{height:36px;min-height:36px;padding:0 12px;gap:12px;background:var(--title-bg);border-bottom:1px solid var(--line);-webkit-app-region:drag}
+body.custom-titlebar .topbar{padding-right:148px}
+.topbar button,.topbar input,.topbar select,.topbar label{ -webkit-app-region:no-drag}
+body .wordmark{font-size:13px;letter-spacing:0;font-weight:400;min-width:86px;gap:8px;color:var(--muted)}
+body .wordmark .local-pill{display:none}
+body .command-center{height:26px;min-width:160px;width:auto;max-width:600px;flex:1;margin:0 auto;padding:0 10px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);font-size:12px;color:var(--muted);gap:8px;box-shadow:none}
+body .command-center #breadcrumb-project{font-weight:400;font-size:12px;color:var(--ink)}
+body .command-center .command-placeholder{font-size:12px}
+body .command-center kbd{font:10px var(--ui-font);background:none;color:var(--muted);border-color:var(--line)}
+body .palette-control{display:none}
+body .appearance-switch{border:0;background:none;padding:0;gap:2px;border-radius:4px;height:26px}
+body .appearance-switch button{height:26px;padding:0 7px;font-size:11px;border-radius:4px;color:var(--muted)}
+body .appearance-switch button[aria-pressed=true]{background:var(--selection);color:var(--ink)}
+body #connect-top{font-size:12px;gap:5px;white-space:nowrap;padding:3px 6px;color:var(--muted)}
+body .workbench{background:var(--page)}
+body .app-sidebar{background:var(--panel);padding:0;min-width:0;border-right:1px solid var(--line)}
+body .app-sidebar .explorer-header{height:35px;min-height:35px;padding:0 10px;gap:6px;border-bottom:0}
+body #preview-panel-title{font-size:11px;letter-spacing:.5px;color:var(--ink);flex:1}
+body .app-sidebar .explorer-header .project-heading{max-width:135px;flex:0 1 auto}
+body .app-sidebar .explorer-header #project-name{font-size:11px}
+body .app-sidebar>.explorer-tabs{height:31px;min-height:31px;flex-shrink:0;margin:0;padding:0 8px;gap:14px;border-bottom:1px solid var(--line)}
+body .app-sidebar>.explorer-tabs button{font-size:12px;padding:0 3px;font-weight:400}
+body #sidebar-preview-area,body #sidebar-source-area{padding:0 8px}
+body .app-sidebar .preview-wrap{border:1px solid var(--line);border-radius:0;margin-top:8px;box-shadow:none}
+body .app-sidebar .preview-caption{height:34px;background:var(--panel);padding:0 4px;gap:4px;border-bottom:1px solid var(--line)}
+body .app-sidebar .preview-caption .address-bar{background:var(--input-bg);border:1px solid var(--input-border);border-radius:3px;height:25px}
+body .app-sidebar .preview-caption .address-bar input{font:11px var(--mono);color:var(--ink)}
+body .app-sidebar .preview-caption .inspect-button{font-size:11px;height:28px;min-height:28px;padding:0 6px;border-radius:3px}
+body .preview-height-sash{height:5px;background:var(--panel)}
+body .preview-details{margin:4px 8px 0}
+body .preview-details>summary{font-size:11px;height:28px}
+body .app-sidebar .sidebar-footer{min-height:22px;height:22px;margin:0;padding:0 8px;background:var(--status-bg);border-top:1px solid var(--line);font-size:10px}
+body .source-tree-title{font-size:11px;letter-spacing:.3px;padding:14px 0 8px}
+body .tree-file{min-height:24px;font:12px var(--ui-font);padding:4px 7px;gap:6px}
+body .tree-file .file-extension{font:10px var(--mono)}
+body .source-tree-note{font-size:12px;line-height:1.5}
+body .main-content{padding:0;overflow:hidden;background:var(--page);gap:0}
+body .trace-workspace{border:0;border-radius:0;box-shadow:none;min-height:250px;flex:1}
+body .trace-toolbar{height:35px;min-height:35px;padding:0 8px 0 0;gap:0;background:var(--panel);border-bottom:1px solid var(--line)}
+body .view-tabs{margin:0;gap:0;min-width:0;flex:1;overflow-x:auto;scrollbar-width:none;align-self:stretch}
+body .view-tabs button{height:35px;padding:0 12px;font:12px var(--ui-font);gap:6px;border-radius:0;border:0;border-right:1px solid var(--line);border-top:2px solid transparent;flex-shrink:0;color:var(--muted);background:var(--tab-bg)}
+body .view-tabs button[aria-selected=true]{background:var(--tab-active);border-top-color:var(--accent);color:var(--ink);box-shadow:none;border-bottom:0}
+body .view-tabs button:hover{color:var(--ink);background:var(--hover-bg)}
+body .view-tabs button svg{width:14px;height:14px}
+body .view-tabs .count{font:10px var(--ui-font);padding:0 4px;border-radius:3px;background:var(--selection);color:var(--muted)}
+body .trace-controls{flex-shrink:0;padding-left:8px;gap:4px}
+body .trace-controls .motion-control{font:11px var(--ui-font);padding:3px 5px}
+body .page-heading{height:34px;min-height:34px;padding:0 10px;margin:0;background:var(--page);border-bottom:1px solid var(--line);gap:8px}
+body .page-heading h1{font:12px var(--ui-font);color:var(--muted);letter-spacing:0}
+body .heading-actions{gap:6px;flex-wrap:nowrap}
+body .heading-actions .primary-button,body .heading-actions .secondary-button{height:28px;min-height:28px;padding:2px 8px;font:11px var(--ui-font);border-radius:4px;box-shadow:none}
+body .primary-button,body .inspect-button{background:var(--button)!important;color:var(--on-button)!important;border-color:var(--button)!important;box-shadow:none}
+body .primary-button:hover,body .inspect-button:hover{background:var(--button-hover)!important;filter:none}
+body .secondary-button{background:var(--panel);border-color:var(--input-border);color:var(--ink);border-radius:4px;font-size:12px;box-shadow:none}
+body .icon-button{border-radius:3px;color:var(--muted)}
+body .icon-button:hover{background:var(--hover-bg);color:var(--ink)}
+body .trace-summary{min-height:28px;padding:3px 10px;background:var(--page);border-bottom:1px solid var(--line)}
+body .trace-id,body .capture-time{font:10px var(--ui-font);letter-spacing:0}
+body .coverage-badge{font-size:10px;font-weight:400;border-radius:3px;background:var(--accent-soft)}
+body .trace-readiness{background:var(--page);padding:0;border:0}
+body .trace-readiness-copy p,body .trace-coverage-details{font-size:11px}
+body .graph-canvas{background:var(--canvas);background-image:none!important;border-radius:0}
+body .graph-node .node-card{rx:4px;ry:4px;stroke-width:1;fill:var(--panel);stroke:var(--line);filter:none}
+body .graph-node.selected .node-card{stroke:var(--accent);stroke-width:1.5}
+body .graph-node .node-icon-bg{rx:3px;ry:3px;fill:var(--selection)}
+body .graph-node .node-title{font-family:var(--ui-font);font-weight:500}
+body .graph-node .node-kind,body .graph-node .node-step{font-family:var(--ui-font);font-weight:400;letter-spacing:.3px}
+body .graph-node .node-sub,body .graph-node .node-code{font-family:var(--mono)}
+body .canvas-footer{height:22px;min-height:22px;padding:0 10px;font-size:10px;border-top:1px solid var(--line);background:var(--page)}
+body .canvas-footer .legend{font-size:10px}
+body .graph-canvas>.zoom-controls{height:28px;border-radius:4px;box-shadow:none;background:var(--panel)}
+body .graph-canvas .zoom-controls button{height:26px;width:28px;min-width:28px;font-size:16px}
+body .graph-canvas .zoom-controls #zoom-value{font:11px var(--ui-font);width:44px}
+body .detail-panel{margin-top:0;border:0;border-top:1px solid var(--line);border-radius:0;background:var(--page);min-height:180px;box-shadow:none}
+body .detail-tabs{height:35px;min-height:35px;background:var(--panel);padding:0 10px;border-bottom:1px solid var(--line)}
+body .inspector-tabs button,body .detail-tabs>button{font:11px var(--ui-font);letter-spacing:0;font-weight:400}
+body .detail-heading{height:32px;min-height:32px;padding:0 12px;background:var(--page);border-bottom:1px solid var(--line)}
+body #detail-title{font:12px var(--ui-font)}
+body .detail-kind{font:10px var(--ui-font);letter-spacing:0;border-radius:3px;font-weight:400}
+body .code-column{background:var(--code)}
+body .code-path{font:12px var(--ui-font);padding:6px 12px;color:var(--muted)}
+body .code-line{font:13px/20px var(--mono);min-height:20px;font-weight:400;letter-spacing:0;color:var(--editor-ink)}
+body .code-line .line-number{font:12px/20px var(--mono);color:var(--subtle)}
+body .evidence-column{padding:14px;font:12px/1.6 var(--ui-font);background:var(--page);border-left:1px solid var(--line)}
+body .evidence-column .section-label{font:11px var(--ui-font);letter-spacing:.3px}
+body .evidence-column p{font-size:12px;line-height:1.6}
+body .evidence-grid{font-size:11px;gap:8px 10px}
+body .evidence-grid dd,body .evidence-grid code{font:11px/1.5 var(--mono)}
+body .component-source .component-name{font:12px var(--ui-font)}
+body .component-location{font:11px var(--mono)}
+body .workspace-footer{height:22px;min-height:22px;padding:0 10px;font:11px var(--ui-font);background:var(--status-bg);border-top:1px solid var(--line);color:var(--muted)}
+body .workspace-footer>span:last-child{font:10px var(--ui-font);letter-spacing:0}
+body .app-dialog{font-family:var(--ui-font);border-radius:8px;background:var(--panel);box-shadow:0 8px 28px #0003}
+body .app-dialog h2{font:500 20px var(--ui-font)}
+body .app-dialog input,body .app-dialog select{font:12px var(--ui-font);background:var(--input-bg);border-color:var(--input-border);border-radius:4px}
+body .app-dialog textarea,body .tracing-setup-code,body pre,body code{font-family:var(--mono)}
+body .command-dialog{margin-top:42px;border-radius:8px;background:var(--panel);max-width:calc(100vw - 64px);width:600px}
+body .command-input-wrap{height:30px;margin:8px;border-radius:4px;background:var(--input-bg)}
+body .command-option{padding:6px 10px;min-height:28px;font:12px var(--ui-font);border-radius:3px}
+body .command-footer{padding:5px 10px;font:11px var(--ui-font);background:var(--panel)}
+body .diagram-editors textarea{font:13px/20px var(--mono);background:var(--code)}
+body .dialog-eyebrow,body .section-label{font-family:var(--ui-font)}
+body input:focus-visible,body select:focus-visible,body textarea:focus-visible,body button:focus-visible{outline:1px solid var(--focus-border);outline-offset:-1px}
+@container(max-width:560px){.page-heading h1{display:none!important}.heading-actions{width:100%;justify-content:flex-end}.trace-summary .capture-time{display:none!important}.trace-toolbar .view-tabs button{padding:0 8px}.trace-controls .motion-control{font-size:0!important;gap:0}}
+@media(max-width:1200px){body .command-placeholder{display:none}body .wordmark{min-width:64px}body .topbar{gap:8px}body .appearance-switch button{padding:0 5px;font-size:10px}body #connect-top{font-size:11px}}
+
+/* A single moving selection pill, with two accessible Light / Dark targets. */
+body .appearance-switch{position:relative;isolation:isolate;width:116px;height:28px;padding:2px;gap:0;flex-shrink:0;border:1px solid var(--input-border);border-radius:6px;background:var(--page);-webkit-app-region:no-drag}
+body .appearance-switch::before{content:'';position:absolute;z-index:-1;top:2px;bottom:2px;left:2px;width:54px;background:#313233;border:1px solid #454749;border-radius:4px;box-shadow:0 1px 3px #0003;transform:translateX(55px);transition:transform 220ms var(--motion-ease),background-color 180ms var(--motion-ease),border-color 180ms var(--motion-ease);pointer-events:none}
+body .appearance-switch button{width:55px;height:22px;padding:0;flex:1;font:11px var(--ui-font);position:relative;border:0;border-radius:4px;background:transparent!important;color:var(--muted)}
+body .appearance-switch button[aria-pressed=true]{background:transparent!important;color:var(--ink);font-weight:500}
+:root[data-theme=light] body .appearance-switch{background:#d1e3f3;border-color:#a9c4da}
+:root[data-theme=light] body .appearance-switch::before{transform:translateX(0);background:#f8fbff;border-color:#b3ccdf;box-shadow:0 1px 4px #305d8033}
+body .topbar,body .rail,body .app-sidebar,body .trace-toolbar,body .page-heading,body .graph-canvas,body .code-column,body .detail-panel,body .evidence-column{transition:background-color 180ms var(--motion-ease),border-color 180ms var(--motion-ease)}
+body .graph-node .node-card{transition:fill 180ms var(--motion-ease),stroke 180ms var(--motion-ease),filter 180ms var(--motion-ease)}
+:root[data-theme=light] body .graph-node .node-card{fill:var(--card);stroke:#9ebbd3;filter:drop-shadow(0 3px 4px #244b701c);stroke-width:1.2}
+:root[data-theme=light] body .graph-node:hover .node-card{stroke:var(--accent);filter:drop-shadow(0 4px 6px #244b7029)}
+:root[data-theme=light] body .graph-node.selected .node-card{stroke:var(--accent);stroke-width:1.7;filter:drop-shadow(0 3px 5px #0069cc2b)}
+:root[data-theme=light] body .app-sidebar{box-shadow:2px 0 7px #315d7e0d}
+:root[data-theme=light] body .detail-panel{box-shadow:0 -3px 10px #315d7e10}
+:root[data-theme=light] body .app-dialog,:root[data-theme=light] body .command-dialog{background:var(--card);border-color:#a4bfd5;box-shadow:0 10px 32px #254f7330,0 2px 8px #254f731c}
+:root[data-theme=light] body .command-option:hover,:root[data-theme=light] body .command-option.active{background:#d5e8f8}
+:root[data-theme=light] body .zoom-controls,:root[data-theme=light] body .secondary-button{box-shadow:0 1px 3px #315d7e12}
+:root[data-theme=light] body .view-tabs button[aria-selected=true]{box-shadow:inset 0 -1px var(--tab-active)}
+@media(prefers-reduced-motion:reduce){body .appearance-switch::before{transition:none}}
+
+/* Reference-style pane frames with narrow gutters and compact controls. */
+body .main-content{padding:4px 5px 0;gap:4px}
+body .trace-workspace{border:1px solid var(--line);border-radius:8px}
+body .trace-toolbar{border-radius:7px 7px 0 0}
+body .canvas-footer{border-radius:0 0 7px 7px}
+body .detail-panel{border:1px solid var(--line);border-radius:8px;margin-top:0}
+body .inspector-tabs,body .detail-tabs{border-radius:7px 7px 0 0}
+body .detail-body{border-radius:0 0 7px 7px}
+body .code-column{border-bottom-left-radius:7px}
+body .evidence-column{border-bottom-right-radius:7px}
+body .primary-button,body .secondary-button,body .inspect-button,body .icon-button,body #connect-top,body .command-option,body .tree-file{border-radius:4px}
+body .view-tabs button,body .inspector-tabs button,body .detail-tabs>button,body .explorer-tabs button{border-radius:4px 4px 0 0}
+body .graph-node .node-card{rx:6px;ry:6px}
+
+/* Selection uses a filled surface, without decorative accent rules. */
+body .view-tabs button[aria-selected=true]{border-top-color:transparent;border-right-color:var(--line);box-shadow:none;color:var(--ink)}
+body .inspector-tabs button[aria-selected=true],body .detail-tabs>button[aria-selected=true],body .explorer-tabs button[aria-selected=true]{border-bottom-color:transparent;box-shadow:none}
+:root[data-theme=light] body .view-tabs button[aria-selected=true]{box-shadow:none}
+
+/* Fill the whole selected tab so selection is visible beyond its accent line. */
+body .inspector-tabs button[aria-selected=true],body .detail-tabs>button[aria-selected=true],body .explorer-tabs button[aria-selected=true],body .view-tabs button[aria-selected=true]{background:var(--selection);color:var(--ink);font-weight:500}
+:root[data-theme=light] body .inspector-tabs button[aria-selected=true],:root[data-theme=light] body .detail-tabs>button[aria-selected=true],:root[data-theme=light] body .explorer-tabs button[aria-selected=true],:root[data-theme=light] body .view-tabs button[aria-selected=true]{background:#bdd8ef;color:#163f63}
+
+/* Selected tab labels and their icons use the normal foreground color. */
+body .view-tabs button[aria-selected=true],body .inspector-tabs button[aria-selected=true],body .detail-tabs>button[aria-selected=true],body .explorer-tabs button[aria-selected=true]{color:var(--ink)!important}
+body .view-tabs button[aria-selected=true] svg,body .view-tabs button[aria-selected=true] [data-icon],body .inspector-tabs button[aria-selected=true] svg,body .explorer-tabs button[aria-selected=true] svg{color:inherit!important;stroke:currentColor}
+
+/* Avoid a white seam around the native browser preview. */
+body .app-sidebar .preview-wrap{border-color:transparent;box-shadow:none}
+body .app-sidebar .preview-surface{background:var(--canvas);border:0;outline:0;box-shadow:none}
+
+
+
+/* Approved product mark fits the existing rail geometry. */
+body .rail .brand-mark:has(img){padding:3px 8px}
+body .brand-mark img{display:block;width:30px;height:30px;object-fit:contain;flex-shrink:0}
