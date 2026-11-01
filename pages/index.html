@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Watch the Orivo demo and trace a UI value to its source, API, SQL query, and database origin."
+    />
+    <title>Orivo | Trace UI Values to Their Origin</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #f7f8ff;
+        --muted: #aeb4c8;
+        --surface: rgba(15, 20, 43, 0.78);
+        --line: rgba(173, 191, 255, 0.18);
+        --cyan: #2fe7f5;
+        --violet: #9577ff;
+        --pink: #ff5eae;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 12%, rgba(47, 231, 245, 0.16), transparent 27rem),
+          radial-gradient(circle at 85% 22%, rgba(149, 119, 255, 0.19), transparent 31rem),
+          #070914;
+      }
+
+      a { color: inherit; }
+
+      .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 0;
+      }
+
+      .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 750; letter-spacing: -0.03em; }
+      .brand img { width: 34px; height: 34px; object-fit: contain; }
+      .brand span { font-size: 1.25rem; }
+
+      .repo-link { color: var(--muted); font-size: 0.94rem; text-underline-offset: 4px; }
+      .repo-link:hover { color: var(--ink); }
+
+      main { padding: 44px 0 80px; }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        color: var(--cyan);
+        font-size: 0.8rem;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 850px;
+        margin: 0;
+        font-size: clamp(2.6rem, 7vw, 5.8rem);
+        line-height: 0.96;
+        letter-spacing: -0.065em;
+      }
+
+      .intro {
+        max-width: 680px;
+        margin: 28px 0 34px;
+        color: var(--muted);
+        font-size: clamp(1.05rem, 2vw, 1.23rem);
+        line-height: 1.65;
+      }
+
+      .notice {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        max-width: 760px;
+        margin: 0 0 44px;
+        padding: 15px 17px;
+        border: 1px solid rgba(255, 107, 132, 0.45);
+        border-radius: 14px;
+        color: #ffd7df;
+        background: rgba(134, 28, 54, 0.22);
+        line-height: 1.5;
+      }
+
+      .notice strong { color: #fff0f3; }
+
+      .video {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: #000;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), 0 0 70px rgba(72, 110, 255, 0.13);
+      }
+
+      .video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 74px; }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 19px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: linear-gradient(105deg, var(--cyan), var(--violet) 52%, var(--pink));
+        color: #07111c;
+        font-weight: 800;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+      }
+
+      .button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(101, 126, 255, 0.32); }
+      .button.secondary { border-color: var(--line); background: var(--surface); color: var(--ink); }
+
+      .path {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .step {
+        min-height: 132px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+      }
+
+      .step span { display: block; margin-bottom: 20px; color: var(--cyan); font-size: 0.77rem; font-weight: 750; }
+      .step strong { display: block; font-size: 1.07rem; letter-spacing: -0.025em; }
+
+      footer { padding: 28px 0 42px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.88rem; }
+
+      @media (max-width: 740px) {
+        .shell { width: min(100% - 28px, 1120px); }
+        header { padding: 18px 0; }
+        .repo-link { font-size: 0.82rem; }
+        main { padding-top: 28px; }
+        .path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .step { min-height: 108px; }
+      }
+
+      @media (max-width: 420px) {
+        .repo-link { display: none; }
+        .path { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="https://github.com/dmgiri/orivo" aria-label="Orivo GitHub repository">
+          <img src="logo.png" alt="" width="34" height="34" />
+          <span>orivo</span>
+        </a>
+        <a class="repo-link" href="https://github.com/dmgiri/orivo">View on GitHub</a>
+      </header>
+
+      <main>
+        <p class="eyebrow">Orivo demo</p>
+        <h1>See where a UI value starts.</h1>
+        <p class="intro">
+          Watch Orivo trace a visible value through frontend source, an API request, backend execution, SQL, and database origin evidence.
+        </p>
+
+        <aside class="notice" aria-label="Development-only notice">
+          <span aria-hidden="true">!</span>
+          <div><strong>Development only.</strong> Use Orivo only with local development projects. Do not use it with production applications or production data.</div>
+        </aside>
+
+        <section class="video" aria-label="Orivo demonstration video">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/WrPwzjOSBgs?rel=0"
+            title="Orivo - Trace UI Values to Source, API, SQL and Database Origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </section>
+
+        <div class="actions">
+          <a class="button" href="https://github.com/dmgiri/orivo">Explore Orivo on GitHub</a>
+          <a class="button secondary" href="https://www.youtube.com/watch?v=WrPwzjOSBgs">Watch on YouTube</a>
+        </div>
+
+        <section aria-labelledby="trace-path">
+          <p class="eyebrow" id="trace-path">Captured trace path</p>
+          <div class="path">
+            <article class="step"><span>01</span><strong>UI value</strong></article>
+            <article class="step"><span>02</span><strong>Frontend source</strong></article>
+            <article class="step"><span>03</span><strong>API request</strong></article>
+            <article class="step"><span>04</span><strong>Backend and SQL</strong></article>
+            <article class="step"><span>05</span><strong>Database origin</strong></article>
+          </div>
+        </section>
+      </main>
+
+      <footer>Orivo shows captured runtime evidence and highlights gaps it cannot prove.</footer>
+    </div>
+  </body>
+</html>
