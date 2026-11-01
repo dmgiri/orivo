@@ -13,6 +13,10 @@ Every connection is backed by captured runtime evidence. When Orivo cannot prove
 
 ---
 
+## Watch the demo
+
+[▶ Watch the one-minute Orivo demo on YouTube](https://www.youtube.com/watch?v=WrPwzjOSBgs)
+
 ## See Orivo in action
 
 The screenshots below are captured from Orivo’s local demo trace, which follows a selected product price through the frontend, request, backend, SQL execution, and verified database column.
