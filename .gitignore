@@ -12,6 +12,7 @@ resources/ai/models/*.gguf
 resources/ai/asset-manifest.json
 resources/ai/.prepare-*/
 /model/
+/.worktrees/
 
 # YouTube publishing assets (kept locally; not part of product documentation)
 docs/images/orivo-youtube-thumbnail*.png
