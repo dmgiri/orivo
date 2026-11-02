@@ -127,6 +127,10 @@ AI Explain is not available in version 0.1.0, and related controls are not shown
 - [Tracing adapter reference](adapters/tracing/README.md) — adapter setup and evidence semantics
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 
+## Broken-price companion demo
+
+Choose **Investigate a broken price** to see an intentional `$12,900` storefront symptom traced to its faulty backend conversion. See the [demo walkthrough](docs/DEMO.md).
+
 ## License
 
 Released under the [MIT License](LICENSE).

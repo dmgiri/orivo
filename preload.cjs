@@ -44,6 +44,7 @@ contextBridge.exposeInMainWorld('traceAtlas', Object.freeze({
   connectRepository: () => invoke('connect-repository'),
   openApp: url => invoke('open-app', url),
   openDemo: () => invoke('open-demo'),
+  openBrokenDemo: () => invoke('open-broken-demo'),
   inspect: () => invoke('inspect'),
   capture: selector => invoke('capture', selector),
   refresh: () => invoke('refresh'),

@@ -8,6 +8,7 @@ const { pathToFileURL } = require('node:url');
 const security = require('./host-security.cjs');
 const engine = require('./engine/index.cjs');
 const { startDemo } = require('./demo/server.cjs');
+const { startBrokenDemo } = require('./demo-broken/server.cjs');
 const { createWorkspaceStore } = require('./product-store.cjs');
 const { createTraceStore, importEvidence } = require('./trace-store.cjs');
 const { createProjectMapStore } = require('./project-map-store.cjs');
@@ -60,7 +61,7 @@ if (!ownsInstance) {
   else app.exit(0);
 }
 if (process.platform === 'win32') app.setAppUserModelId('com.orivo.desktop');
-let window, preview, repoIndex = null, demoServer = null, demoServerPromise = null, latestGraph = null, lastSelection = null, closing = false, shutdownPromise = null, shutdownExitCode = 0;
+let window, preview, repoIndex = null, demoServer = null, demoServerPromise = null, demoKind = null, latestGraph = null, lastSelection = null, closing = false, shutdownPromise = null, shutdownExitCode = 0;
 const capturedGraphs = new Map();
 let contextRevision = 0, captureRevision = 0, repositoryRevision = 0, inspectRevision = 0, workspaceRevision = 0, desiredInspectMode = false;
 let pageRuntimeRevision = 0;
@@ -261,9 +262,11 @@ async function openUrl(value, demo = false, workspaceOperation) {
   catch (error) { if (operation !== workspaceRevision) return state; publish({ loading: false }); throw error; }
   return state;
 }
-async function openDemo() {
+async function openDemo(kind = 'working') {
   const operation = beginWorkspaceChange();
-  if (!demoServerPromise) demoServerPromise = startDemo().then(server => (demoServer = server)).catch(error => { demoServerPromise = null; throw error; });
+  if (demoKind !== kind && demoServer) { await demoServer.close(); demoServer = null; demoServerPromise = null; }
+  demoKind = kind;
+  if (!demoServerPromise) demoServerPromise = (kind === 'broken' ? startBrokenDemo : startDemo)().then(server => (demoServer = server)).catch(error => { demoServerPromise = null; throw error; });
   await demoServerPromise;
   if (operation !== workspaceRevision) return state;
   await connectRoot(demoServer.root, operation);
@@ -580,7 +583,8 @@ function installIpc() {
     catch (error) { if (operation === workspaceRevision) publish({ loading: false }); throw error; }
   });
   handle('open-app', url => openUrl(url));
-  handle('open-demo', async () => { try { return await openDemo(); } catch (error) { publish({ loading: false }); throw error; } });
+  handle('open-demo', async () => { try { return await openDemo('working'); } catch (error) { publish({ loading: false }); throw error; } });
+  handle('open-broken-demo', async () => { try { return await openDemo('broken'); } catch (error) { publish({ loading: false }); throw error; } });
   handle('inspect', toggleInspect);
   handle('capture', selector => captureElement(selector));
   handle('refresh', async () => { if (!state.url) return state; publish({ ...invalidateContext(), inspectMode: false, loading: true }); preview.webContents.reload(); return state; });
@@ -694,7 +698,7 @@ async function createWindow() {
     if (!state.demo) return;
     try {
       await preview.webContents.executeJavaScript(`new Promise(resolve => { let attempts=0; const poll=()=>{if(document.documentElement.dataset.traceReady==='true'||++attempts>120)resolve();else setTimeout(poll,50);};poll(); })`);
-      if (state.demo) await captureElement({ selector: '[data-trace-id="price-orbit"]', label: '$129', tag: 'span' });
+      if (state.demo) await captureElement({ selector: '[data-trace-id="price-orbit"]', label: demoKind === 'broken' ? '$12,900' : '$129', tag: 'span' });
     } catch (error) { reportError(error); }
   });
   window.on('resize', renderPreviewBounds);

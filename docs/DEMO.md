@@ -57,6 +57,12 @@ After selecting the price, use these views to understand why each connection exi
 
 ## Explore other kinds of paths
 
+## Investigate a broken price
+
+Choose **Investigate a broken price**. The Orbit item visibly renders as **$12,900** instead of `$129`. Select it and follow the trace to `server.cjs`: an intentionally incorrect cents conversion multiplies the database value by 100 before it reaches the frontend. SQL evidence still identifies `products.price` as the original field.
+
+Orivo does not diagnose the defect automatically; it presents the captured evidence needed to verify the cause.
+
 ### Frontend-only value
 
 Select the storefront footer text, **Designed to make room for the everyday.** It is intentionally marked as a frontend-only/static value, so no request, backend, SQL, or database-column claim is shown.

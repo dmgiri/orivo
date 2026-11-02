@@ -7,6 +7,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const net = require('node:net');
 const {inflateSync}=require('node:zlib');
 const { startDemo, sourceMetadata } = require('../demo/server.cjs');
+const { startBrokenDemo, sourceMetadata: brokenSourceMetadata } = require('../demo-broken/server.cjs');
 const decode=header=>JSON.parse((header.startsWith('z1.')?inflateSync(Buffer.from(header.slice(3),'base64'),{maxOutputLength:300000}):Buffer.from(header,'base64')).toString());
 
 test('live demo returns executed SQLite column lineage with matching source hashes', async t => {
@@ -26,6 +27,24 @@ test('live demo returns executed SQLite column lineage with matching source hash
   const metadata = sourceMetadata();
   assert.equal(metadata.price.hash, createHash('sha256').update(fs.readFileSync(path.join(demo.root, 'app.mjs'))).digest('hex'));
   assert.match(fs.readFileSync(path.join(demo.root, 'app.mjs'), 'utf8').split('\n')[metadata.price.line - 1], /trace:price/);
+});
+test('broken demo exposes the bad price while preserving its captured column lineage', async t => {
+  const demo = await startBrokenDemo(); t.after(() => demo.close());
+  const id = randomUUID();
+  const response = await fetch(demo.url + '/api/catalog', { headers: { 'X-Studio-Trace': id } });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  const trace = decode(response.headers.get('Studio-Trace'));
+  assert.equal(body.products[0].price, 12900);
+  assert.equal(body.products[1].price, 89);
+  assert.equal(trace.id, id);
+  assert.equal(trace.fields['products.0.price'].table, 'products');
+  assert.equal(trace.fields['products.0.price'].column, 'price');
+  const metadata = brokenSourceMetadata();
+  assert.match(fs.readFileSync(path.join(demo.root, 'app.mjs'), 'utf8').split('\n')[metadata.price.line - 1], /trace:price/);
+  const bad = await fetch(demo.url + '/api/catalog', { headers: { 'X-Studio-Trace': '../../secret' } });
+  assert.equal(bad.status, 500);
+  assert.equal((await fetch(demo.url + '/server.cjs')).status, 404);
 });
 test('cart action performs a real mutation and preserves parameterized query evidence', async t => {
   const demo = await startDemo(); t.after(() => demo.close());
@@ -64,4 +83,20 @@ test('demo shutdown closes an unfinished request promptly and is idempotent', as
   await Promise.race([closing, new Promise((_, reject) => { deadline = setTimeout(() => reject(Error('Demo shutdown waited for an unfinished client request.')), 1200); })]).finally(() => clearTimeout(deadline));
   assert.ok(performance.now() - started < 1000, 'server shutdown is bounded');
   await assert.rejects(fetch(demo.url));
+});
+test('desktop exposes a dedicated broken-demo command', () => {
+  const host = fs.readFileSync(path.join(__dirname, '..', 'main.cjs'), 'utf8');
+  const bridge = fs.readFileSync(path.join(__dirname, '..', 'preload.cjs'), 'utf8');
+  assert.match(host, /startBrokenDemo/);
+  assert.match(host, /open-broken-demo/);
+  assert.match(bridge, /openBrokenDemo: \(\) => invoke\('open-broken-demo'\)/);
+});
+test('investigation UI and documentation describe the broken price scenario', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'index.html'), 'utf8');
+  const app = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'app.js'), 'utf8');
+  const guide = fs.readFileSync(path.join(__dirname, '..', 'docs', 'DEMO.md'), 'utf8');
+  assert.match(html, /Investigate a broken price/);
+  assert.match(app, /openBrokenDemo/);
+  assert.match(guide, /\$12,900/);
+  assert.match(guide, /does not diagnose/i);
 });
