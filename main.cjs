@@ -264,6 +264,11 @@ async function openUrl(value, demo = false, workspaceOperation) {
 }
 async function openDemo(kind = 'working') {
   const operation = beginWorkspaceChange();
+  if (demoKind !== kind && demoServerPromise) {
+    const previous = await demoServerPromise;
+    await previous.close();
+    if (demoServer === previous) { demoServer = null; demoServerPromise = null; }
+  }
   if (demoKind !== kind && demoServer) { await demoServer.close(); demoServer = null; demoServerPromise = null; }
   demoKind = kind;
   if (!demoServerPromise) demoServerPromise = (kind === 'broken' ? startBrokenDemo : startDemo)().then(server => (demoServer = server)).catch(error => { demoServerPromise = null; throw error; });

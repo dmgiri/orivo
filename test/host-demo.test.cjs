@@ -90,6 +90,7 @@ test('desktop exposes a dedicated broken-demo command', () => {
   assert.match(host, /startBrokenDemo/);
   assert.match(host, /open-broken-demo/);
   assert.match(bridge, /openBrokenDemo: \(\) => invoke\('open-broken-demo'\)/);
+  assert.match(host, /demoKind !== kind && demoServerPromise/);
 });
 test('investigation UI and documentation describe the broken price scenario', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'index.html'), 'utf8');
